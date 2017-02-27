@@ -1,0 +1,40 @@
+1.HDFS Federation and High availability:
+    
+   * HDFS Federation improves the existing HDFS architecture through a clear sepertion of namespace and storage
+   * It support for multiple namespace in the cluster to improve scalability and isolation
+   * Federation also opens up the architecture,expanding the applicablity of HDFS cluster to new implementations and use cases
+   * Federation uses mutiple independent namenodes
+   * The datanode are used as common storage foe blocks by all the namenodes
+   * Each datanode register with all the namenode in the cluster
+   * Datanodes send periodic heartbeats and block reports and handles commands from the namenodes
+   * A Block Pool is a set of blocks that belong to a single namespace
+   * Datanodes store blocks for all the block pools in the cluster
+   * A Namespace and its block pool together are called Namespace Volume
+   * It is a self-contained unit of management
+   * When a namenode is deleted, the corresponding block pool at the datanodes is deleted
+   * Each namespace volume is upgraded as a unit, during cluster upgrade
+   KEY BENEFITS:
+      - sCALABILITY AND ISOLATION
+      - GENERIC STORAGE SERVICE
+      - DESIGN SIMPLICITY
+      - ACKNOWLEDGEMENTS AND CONCLUSION   
+   * HIGH AVAILABILITY:
+      - The main motive of the Hadoop 2.0 High Availability project is to render availability to big data applications 24/7 by deploying 2  Hadoop NameNodes –One in active configuration and the other is the Standby Node in passive configuration
+      - Earlier there was one Hadoop Namenode for maintaining the tree hierachy of the HDFS files and tracking the data storage  in the clustering
+      - Hadoop 2.0 High Availability allows users to configure Hadoop clusters with uncalled- for NameNodes so as to eliminate the probability of SPOF in a given Hadoop cluster
+      - Hadoop user exceptations from Hadoop 2.0 high availability:
+             * No data loss on failure 
+             * Stand for multiple faliure
+             * Self recovery from a failure
+             * Ease of installation
+             * No demand for additional hardware requirements
+
+2. How HDFS handles failures while writing data:
+     
+    * Hadoop has inbuilt functionality to handle this scenario
+    * If a datanode fails while data is being written to it, then the following actions are taken:
+ 
+       - First, the pipeline is closed, and any packets in the ack queue are added to the front of the data queue so that datanode that are downstream from the failed node will not miss any packets
+       - The current block on the good datanode is given a new identity, which is communicated to the namenode, so that the partial block on the failed datanode will be deleted if the failed datanode recovers later on
+       - The failed datanode is removed from the pipeline, and the remainder of the block’s data is written to the two good datanodes in the pipeline
+       - The namenode notices that the block is under-replicated, and it arranges for a further replica to be created on another node. Subsequent blocks are then treated as normal
